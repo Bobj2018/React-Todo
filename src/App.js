@@ -1,24 +1,25 @@
-import React, { localStorage } from 'react';
+import React from 'react';
 
 import TodoList from './components/TodoComponents/TodoList';
 
-const todo = [
-	{
-		task: 'Organize Garage',
-		id: 1528817077286,
-		completed: false
-	},
-	{
-		task: 'Bake Cookies',
-		id: 1528817084358,
-		completed: false
-	}
-];
-
 class App extends React.Component {
-	state = {
-		todoList: todo
-	};
+	constructor() {
+		super();
+		this.state = {
+			todoList: []
+		};
+	}
+
+	componentDidMount() {
+		console.log('CDM');
+		const localData = localStorage.getItem('todo');
+		console.log(JSON.parse(localData));
+
+		this.setState({
+			...this.state,
+			todoList: localData ? JSON.parse(localData).todoList : []
+		});
+	}
 
 	addNewTask = newTask => {
 		const newState = {
@@ -28,7 +29,9 @@ class App extends React.Component {
 				{ task: newTask, completed: false, id: Date.now() }
 			]
 		};
+		this.addToLocalStorage(newState);
 		this.setState(newState);
+		//
 	};
 
 	toggleCompleted = id => {
@@ -44,6 +47,7 @@ class App extends React.Component {
 				return task;
 			})
 		};
+		this.addToLocalStorage(newState);
 		this.setState(newState);
 	};
 
@@ -54,7 +58,12 @@ class App extends React.Component {
 				return !task.completed;
 			})
 		};
+		this.addToLocalStorage(newState);
 		this.setState(newState);
+	};
+
+	addToLocalStorage = data => {
+		localStorage.setItem('todo', JSON.stringify(data));
 	};
 
 	render() {
